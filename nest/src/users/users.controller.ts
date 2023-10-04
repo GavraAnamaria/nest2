@@ -8,8 +8,7 @@ import {
   Post,
   Put,
   UseGuards,
-  UseInterceptors,
-} from '@nestjs/common';
+  UseInterceptors,} from '@nestjs/common';
 import { TransformInterceptor } from '../public/interceptors/transform.interceptor';
 import { UsersService } from './users.service';
 import {

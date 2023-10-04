@@ -32,7 +32,7 @@ function MainNavigation() {
             </Link>
             <p className={styles.menu_item} style={{color:'whitesmoke'}}>NUME SITE//nume in paina</p>
             <div className={styles.menu_items}>
-                {userData.role==="client" && <div className={styles.menu_items}><p className={styles.menu_item}><img className={styles.menu_icon} src={wishlist.src} alt="wishist"/><Link href={'/product'}>Wish List</Link></p>
+                {userData.role==="client" && <div className={styles.menu_items}><p className={styles.menu_item}><img className={styles.menu_icon} src={wishlist.src} alt="wishist"/><Link href={'/wishlist'}>Wish List</Link></p>
                     <p className={styles.menu_item}>Cart</p></div>}
 
                 {userData.role==="admin" && <div className={styles.menu_items}><p className={styles.menu_item}><Link href={'/users'}>Users</Link></p>
