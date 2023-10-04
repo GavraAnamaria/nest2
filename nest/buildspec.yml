@@ -1,0 +1,24 @@
+version: 0.2
+#env:
+#  parameter-store:
+#    HTTP_BASIC_USER: "prod/docviserKeys.HTTP_BASIC_USER"
+#    HTTP_BASIC_PASS: "prod/docviserKeys.HTTP_BASIC_PASS"
+#    AUTH0_DOMAIN: "prod/docviserKeys.AUTH0_DOMAIN"
+#    JWT_SECRET: "prod/docviserKeys.JWT_SECRET"
+#    SEARCH_URI: "prod/docviserKeys.HTTP_BASIC_USER"
+proxy:
+  upload-artifacts: yes
+  logs: yes
+phases:
+  install:
+    runtime-versions:
+      nodejs: 16
+    commands:
+      - pip install --upgrade awscli
+  pre_build:
+    commands:
+      - npm install
+      - npm run build
+  build:
+    commands:
+      - npm run serverless:deploy -- --stage $ENVIRONMENT # Environment stage. (options: dev, qa, prod)

@@ -1,0 +1,30 @@
+
+.cards{
+    padding: 3rem;
+    display: flex;
+    justify-content: space-around;
+    flex-wrap:  wrap;
+    align-content: space-around;
+    gap: 1.5rem;
+}
+
+.menu{
+    padding: .3rem;
+    height: 3rem;
+    margin: 0.5rem;
+    border-radius: 10px;
+    border: 2px solid #555555;
+    opacity: 0.7;
+}
+
+.menuSelected{
+    opacity: 1;
+    border-color: black;
+}
+.menu:hover
+{
+    opacity: 1;
+    border-color: black;
+    translate:0 -2px;
+    box-shadow: 2px 2px 5px black;
+}

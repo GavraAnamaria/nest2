@@ -1,0 +1,33 @@
+service: profile-sls-api
+
+plugins:
+  - serverless-jetpack
+  - serverless-offline
+  - serverless-prune-plugin
+
+provider:
+  name: aws
+  runtime: nodejs16.x
+  region: ${opt:region, 'eu-central-1'}
+
+custom:
+  serverless-offline:
+    noPrependStageInUrl: true
+  prune:
+    automatic: true
+    number: 3
+
+package:
+  individually: true
+  excludeDevDependencies: true
+
+functions:
+  main:
+    handler: dist/main.handler
+    events:
+      - http:
+          method: ANY
+          path: /
+      - http:
+          method: ANY
+          path: '{proxy+}'
