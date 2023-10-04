@@ -6,7 +6,7 @@ import Link from "next/link";
 import {useDispatch} from "react-redux";
 import {messageActions, userActions} from "@/store";
 
-const RegisterForm: React.FC<{mode:string}> =(props)=>{
+function RegisterForm(props:{mode:string}){
     const dispatch= useDispatch()
     const isLogin = (props.mode === 'login')
     const isRegister = (props.mode === 'register')
