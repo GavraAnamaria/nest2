@@ -1,14 +1,15 @@
 import React from "react";
 
 const columns = [
-    {name: "ID", uid: "id", sortable: true},
+    {name: "ID", uid: "id"},
     {name: "NAME", uid: "name", sortable: true},
     // {name: "LAST NAME", uid: "lastName", sortable: true},
-    {name: "ROLE", uid: "role", sortable: true},//CLIENT.ADMIN
-    {name: "STATUS", uid: "status",sortable: true},//CONFIRMAT
-    {name: "UPDATED AT", uid: "updated", sortable: true},
-    {name: "CREATED AT", uid: "created", sortable: true},
+    {name: "ROLE", uid: "role"},//CLIENT.ADMIN
+    {name: "STATUS", uid: "status"},//CONFIRMAT
+    {name: "UPDATED AT", uid: "updatedAt", sortable: true},
+    {name: "CREATED AT", uid: "createdAt", sortable: true},
     {name: "PASSWORD", uid: "password"},
+    {name: "ACTIONS", uid: "actions"},
 ];
 const statusOptions = [
     {name: "Confirmed", uid: "confirmed"},

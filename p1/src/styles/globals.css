@@ -12,9 +12,10 @@ body {
 }
 
 .container{
-  margin: 2rem;
+  padding: 2rem;
   min-width:100vw;
 }
+
 h1{
   font-size: 2.5rem;
   font-weight: bold;
@@ -38,7 +39,7 @@ a {
 
 
 .containerImg{
-  z-index: -1;
+  /*z-index: -1;*/
   position: relative;
   width: 100%;
   height: auto;
@@ -51,7 +52,7 @@ a {
 
 .galaxy{
   overflow: hidden;
-  z-index: -1;
+  /*z-index: -1;*/
   position: relative;
   display: block;
   margin-top: 0 !important;
@@ -71,8 +72,8 @@ a {
   }
 
   100% {
-    translate: 1520% 1450%;
-    scale: 30;
+    translate: 1570% 1500%;
+    scale: 31;
     display:none
   }
 }

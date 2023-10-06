@@ -27,15 +27,16 @@ import {columns, statusOptions, roleOptions} from "./data";
 import {capitalize} from "./utils";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
-    '1': "success",
-    '0': "danger"
+    'confirmed': "success",
+    'unconfirmed': "danger"
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "created", "updated", "actions"];
-type User1={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, firstName:string, lastName:string}
+const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "createdAt", "updatedAt", "actions"];
+type User={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, firstName:string, lastName:string}
+type User1={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, name:string, status:string}
 
-export default function Table1(props:{users:User1[]}) {
-    const users = props.users
+export default function Table1(props:{users:User[]}) {
+    const users:User1[] = props.users.map(u=> {return {id:u.id, role:u.role.substring(1), email:u.email, password:u.password,createdAt:u.createdAt, updatedAt:u.updatedAt, name:u.firstName+' '+u.lastName, status:(u.role.charAt(0)==='0')? 'unconfirmed' : 'confirmed' }})
     // type User = typeof users[0];
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
@@ -63,48 +64,42 @@ export default function Table1(props:{users:User1[]}) {
 
         if (hasSearchFilter) {
             filteredUsers = filteredUsers.filter((user) =>
-              user.firstName.toLowerCase().includes(filterValue.toLowerCase())||
-                user.lastName.toLowerCase().includes(filterValue.toLowerCase())
+              user.name.includes(filterValue)
             );
         }
 
         if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
             filteredUsers = filteredUsers.filter((user) => {
-                    const status = (user.role.charAt(0) === '0') ? 'unconfirmed' : 'confirmed'
-                return Array.from(statusFilter).includes(status)
+                return Array.from(statusFilter).includes(user.status)
                 }
             );
         }
+
         if (roleFilter !== "all" && Array.from(roleFilter).length !== roleOptions.length) {
             filteredUsers = filteredUsers.filter((user) =>
-                  Array.from(roleFilter).includes(user.role.substring(1)),
+                  Array.from(roleFilter).includes(user.role),
             );
         }
-
         return filteredUsers;
     }, [users, filterValue, statusFilter, roleFilter]);
 
     const items = React.useMemo(() => {
         const start = (page - 1) * rowsPerPage;
         const end = start + rowsPerPage;
-
         return filteredItems.slice(start, end);
     }, [page, filteredItems, rowsPerPage]);
 
     const sortedItems = React.useMemo(() => {
         return [...items].sort((a: User1, b: User1) => {
-            // const first = a[sortDescriptor.column as keyof User1] as number;
-            // const second = b[sortDescriptor.column as keyof User1] as number;
-            // const cmp = first < second ? -1 : first > second ? 1 : 0;
-
-            // return sortDescriptor.direction === "descending" ? -cmp : cmp;
-            return sortDescriptor.direction === "descending" ? -1 : 1;
+            const first = a[sortDescriptor.column as keyof User1] as string;
+            const second = b[sortDescriptor.column as keyof User1] as string;
+            const cmp = first < second ? -1 : first > second ? 1 : 0;
+            return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
     }, [sortDescriptor, items]);
 
     const renderCell = React.useCallback((user: User1, columnKey: React.Key) => {
         const cellValue = user[columnKey as keyof User1];
-        const status = (user.role.charAt(0) === '0') ? 'Waiting for confirmation' : 'Confirmed'
 
         switch (columnKey) {
             case "name":
@@ -115,15 +110,15 @@ export default function Table1(props:{users:User1[]}) {
                             description: "text-default-500",
                         }}
                         description={user.email}
-                        name={user.firstName+' '+user.lastName}
+                        name={cellValue}
                     >
-                        {user.firstName}
+                        {user.email}
                     </User>
                 );
             case "role":
                 return (
                     <div className="flex flex-col">
-                        <p className="text-bold text-small capitalize">{user.role.substring(1)}</p>
+                        <p className="text-bold text-small capitalize">{user.role}</p>
                         {/*<p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>*/}
                     </div>
                 );
@@ -131,29 +126,27 @@ export default function Table1(props:{users:User1[]}) {
                 return (
                     <Chip
                         className="capitalize border-none gap-1 text-default-600"
-                        color={statusColorMap[user.role.charAt(0)]}
+                        color={statusColorMap[user.status]}
                         size="sm"
                         variant="dot">
-                        {status}
+                        {(user.status==='unconfirmed')? 'waiting for confirmation':'confirmed'}
                     </Chip>
                 );
-            case "updated":
+            case "updatedAt":
                 return (
                     <div className="flex flex-col">
                         <p className="text-bold text-small capitalize">{user.updatedAt}</p>
-                        {/*<p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>*/}
                     </div>
                 );
-            case "created":
+            case "createdAt":
                 return (
                     <div className="flex flex-col">
                         <p className="text-bold text-small capitalize">{user.createdAt}</p>
-                        {/*<p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>*/}
                     </div>
                 );
             case "actions":
                 return (
-                    <div className="relative flex justify-end items-center gap-2">
+                    <div className="relative flex justify-start items-center gap-2">
                         <Dropdown className="bg-background border-1 border-default-200">
                             <DropdownTrigger>
                                 <Button isIconOnly radius="full" size="sm" variant="light">
@@ -348,7 +341,8 @@ export default function Table1(props:{users:User1[]}) {
     const classNames = React.useMemo(
         () => ({
             wrapper: ["max-h-[382px]", "max-w-3xl"],
-            th: ["bg-transparent", "text-default-500", "border-b", "border-divider"],
+            th: [//"bg-transparent",
+                "text-default-500", "border-b", "border-divider"],
             td: [
                 // changing the rows border radius
                 // first
