@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useEffect} from "react";
 
 import {
     Table,
@@ -23,27 +23,28 @@ import {PlusIcon} from "../../public/Plusicon";
 import {ChevronDownIcon} from "@nextui-org/shared-icons";
 import {VerticalDotsIcon} from "../../public/VerticalDotsIcon";
 import {SearchIcon} from "../../public/SearchIcon";
-import {columns, users, statusOptions} from "./data";
+import {columns, statusOptions, roleOptions} from "./data";
 import {capitalize} from "./utils";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
-    active: "success",
-    paused: "danger",
-    vacation: "warning",
+    '1': "success",
+    '0': "danger"
 };
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "actions"];
+const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "created", "updated", "actions"];
+type User1={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, firstName:string, lastName:string}
 
-type User = typeof users[0];
-
-export default function Table1() {
+export default function Table1(props:{users:User1[]}) {
+    const users = props.users
+    // type User = typeof users[0];
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
     const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
     const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
+    const [roleFilter, setRoleFilter] = React.useState<Selection>("all");
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
-        column: "age",
+        column: "name",
         direction: "ascending",
     });
     const [page, setPage] = React.useState(1);
@@ -54,7 +55,6 @@ export default function Table1() {
 
     const headerColumns = React.useMemo(() => {
         if (visibleColumns === "all") return columns;
-
         return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
 
@@ -63,17 +63,26 @@ export default function Table1() {
 
         if (hasSearchFilter) {
             filteredUsers = filteredUsers.filter((user) =>
-                user.name.toLowerCase().includes(filterValue.toLowerCase()),
+              user.firstName.toLowerCase().includes(filterValue.toLowerCase())||
+                user.lastName.toLowerCase().includes(filterValue.toLowerCase())
             );
         }
+
         if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
+            filteredUsers = filteredUsers.filter((user) => {
+                    const status = (user.role.charAt(0) === '0') ? 'unconfirmed' : 'confirmed'
+                return Array.from(statusFilter).includes(status)
+                }
+            );
+        }
+        if (roleFilter !== "all" && Array.from(roleFilter).length !== roleOptions.length) {
             filteredUsers = filteredUsers.filter((user) =>
-                Array.from(statusFilter).includes(user.status),
+                  Array.from(roleFilter).includes(user.role.substring(1)),
             );
         }
 
         return filteredUsers;
-    }, [users, filterValue, statusFilter]);
+    }, [users, filterValue, statusFilter, roleFilter]);
 
     const items = React.useMemo(() => {
         const start = (page - 1) * rowsPerPage;
@@ -83,49 +92,64 @@ export default function Table1() {
     }, [page, filteredItems, rowsPerPage]);
 
     const sortedItems = React.useMemo(() => {
-        return [...items].sort((a: User, b: User) => {
-            const first = a[sortDescriptor.column as keyof User] as number;
-            const second = b[sortDescriptor.column as keyof User] as number;
-            const cmp = first < second ? -1 : first > second ? 1 : 0;
+        return [...items].sort((a: User1, b: User1) => {
+            // const first = a[sortDescriptor.column as keyof User1] as number;
+            // const second = b[sortDescriptor.column as keyof User1] as number;
+            // const cmp = first < second ? -1 : first > second ? 1 : 0;
 
-            return sortDescriptor.direction === "descending" ? -cmp : cmp;
+            // return sortDescriptor.direction === "descending" ? -cmp : cmp;
+            return sortDescriptor.direction === "descending" ? -1 : 1;
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-        const cellValue = user[columnKey as keyof User];
+    const renderCell = React.useCallback((user: User1, columnKey: React.Key) => {
+        const cellValue = user[columnKey as keyof User1];
+        const status = (user.role.charAt(0) === '0') ? 'Waiting for confirmation' : 'Confirmed'
 
         switch (columnKey) {
             case "name":
                 return (
                     <User
-                        avatarProps={{radius: "full", size: "sm", src: user.avatar}}
+                        avatarProps={{radius: "full", size: "sm", src: "https://i.pravatar.cc/150?u=a042581f4e29026024d"}}
                         classNames={{
                             description: "text-default-500",
                         }}
                         description={user.email}
-                        name={cellValue}
+                        name={user.firstName+' '+user.lastName}
                     >
-                        {user.email}
+                        {user.firstName}
                     </User>
                 );
             case "role":
                 return (
                     <div className="flex flex-col">
-                        <p className="text-bold text-small capitalize">{cellValue}</p>
-                        <p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>
+                        <p className="text-bold text-small capitalize">{user.role.substring(1)}</p>
+                        {/*<p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>*/}
                     </div>
                 );
             case "status":
                 return (
                     <Chip
                         className="capitalize border-none gap-1 text-default-600"
-                        color={statusColorMap[user.status]}
+                        color={statusColorMap[user.role.charAt(0)]}
                         size="sm"
-                        variant="dot"
-                    >
-                        {cellValue}
+                        variant="dot">
+                        {status}
                     </Chip>
+                );
+            case "updated":
+                return (
+                    <div className="flex flex-col">
+                        <p className="text-bold text-small capitalize">{user.updatedAt}</p>
+                        {/*<p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>*/}
+                    </div>
+                );
+            case "created":
+                return (
+                    <div className="flex flex-col">
+                        <p className="text-bold text-small capitalize">{user.createdAt}</p>
+                        {/*<p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>*/}
+                    </div>
                 );
             case "actions":
                 return (
@@ -182,7 +206,8 @@ export default function Table1() {
                         onClear={() => setFilterValue("")}
                         onValueChange={onSearchChange}
                     />
-                    <div className="flex gap-3">
+
+                    <div className="flex gap-4">
                         <Dropdown>
                             <DropdownTrigger className="hidden sm:flex">
                                 <Button
@@ -208,6 +233,33 @@ export default function Table1() {
                                 ))}
                             </DropdownMenu>
                         </Dropdown>
+
+                        <Dropdown>
+                            <DropdownTrigger className="hidden sm:flex">
+                                <Button
+                                    endContent={<ChevronDownIcon className="text-small" />}
+                                    size="sm"
+                                    variant="flat"
+                                >
+                                    Role
+                                </Button>
+                            </DropdownTrigger>
+                            <DropdownMenu
+                                disallowEmptySelection
+                                aria-label="Table Columns"
+                                closeOnSelect={false}
+                                selectedKeys={roleFilter}
+                                selectionMode="multiple"
+                                onSelectionChange={setRoleFilter}
+                            >
+                                {roleOptions.map((role) => (
+                                    <DropdownItem key={role.uid} className="capitalize">
+                                        {capitalize(role.name)}
+                                    </DropdownItem>
+                                ))}
+                            </DropdownMenu>
+                        </Dropdown>
+
                         <Dropdown>
                             <DropdownTrigger className="hidden sm:flex">
                                 <Button
@@ -261,6 +313,7 @@ export default function Table1() {
     }, [
         filterValue,
         statusFilter,
+        roleFilter,
         visibleColumns,
         onSearchChange,
         onRowsPerPageChange,

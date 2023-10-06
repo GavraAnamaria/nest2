@@ -5,6 +5,7 @@ import {useRouter} from "next/router";
 import Link from "next/link";
 import {useDispatch} from "react-redux";
 import {messageActions, userActions} from "@/store";
+import {eventCliSession} from "next/dist/telemetry/events";
 
 function RegisterForm(props:{mode:string}){
     const dispatch= useDispatch()
@@ -82,7 +83,7 @@ function RegisterForm(props:{mode:string}){
         event.preventDefault();
         reset()
         let error
-        let path
+        let path='/'
         if (formIsValid) {
             if (isLogin) {
                 error = await LoginUser(formData.email, formData.password)
@@ -92,8 +93,10 @@ function RegisterForm(props:{mode:string}){
                     const user = decode(token);
                     const role = user.role.substring(1)
                     dispatch(userActions.login({ role: role, name: user.firstName }))
+                    if(role==='admin'){
+                        path='/users'
+                    }
                 }
-                path='/'
             } else if(isRegister){
               error = await SendConfirmMsg(formData.email)
                 if(!error) {

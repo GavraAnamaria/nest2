@@ -8,6 +8,11 @@
     height: 3rem;
     background-color: #282c34;
     /*overflow: hidden;*/
+    position: fixed;
+    min-width:100vw;
+    z-index: 10;
+    /*margin-bottom:3rem;*/
+
 }
 
 .menu_items{

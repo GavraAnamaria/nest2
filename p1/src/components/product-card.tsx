@@ -5,7 +5,8 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 
 function ProductCard(props:{style:string, role:string }){
-    const card_style = props.style==='card2' ? styles.card2:styles.card
+    let card_style = props.style==='card2' ? styles.card2:styles.card
+    if(props.role === "admin") card_style = card_style+' '+ styles.darkCard
 
     const [visible, setVisible] = useState(false);
     const toast = useRef<Toast>(null);
@@ -26,7 +27,7 @@ function ProductCard(props:{style:string, role:string }){
     return (<>
             <Toast ref={toast} />
             <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Are you sure you want to delete this item?" header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
-            <div className={card_style}>
+            <div className={card_style} >
                 {props.role==='admin' && <div className={styles.exitBtn} style={{backgroundColor:"red"}} onClick={() => setVisible(true)} >x</div>}
                 <img src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/home-improvement/wp-content/uploads/2022/07/download-23.jpg" alt="house"/>
                  <div className={styles.text}>

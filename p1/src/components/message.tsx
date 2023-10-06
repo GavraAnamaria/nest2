@@ -14,7 +14,7 @@ function Message(){
         {message.message?
             <ChakraProvider>
                 <Stack >
-                    <Alert status={message.messageType} variant="solid">
+                    <Alert status={message.messageType} variant="solid" style={{top:'3rem'}}>
                         <AlertIcon />
                         {message.message}
                         <button className={'exitButton'} onClick={deleteMessage}>x</button>

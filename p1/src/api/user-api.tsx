@@ -139,6 +139,20 @@ export async function ResetPassword(token:string, password:string) {
     return ""
 }
 
+export async function getUsers(token:string) {
+    const response = await fetch('http://localhost:3001/v1/users', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    })
+
+    return response
+
+}
+
+
 export function decode(token:string){
     const jwtData = token.split('.')[1];
     const decodedJwtJsonData = window.atob(jwtData);

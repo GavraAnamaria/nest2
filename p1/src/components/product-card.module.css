@@ -6,7 +6,7 @@
     box-shadow: 10px 10px 20px #666666;
     border-radius: .5rem;
     text-align: center;
-    height: 14rem;
+    height: 15rem;
     font-size: 20px;
     overflow: hidden;
     background-color: whitesmoke;
@@ -135,13 +135,16 @@
     /*text-align: center;*/
     /*align-content: center;*/
     /*align-items: center;*/
-    height: 8rem;
+    height: 9rem;
     width: 80%;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
     /*background-color: black;*/
     margin: auto;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+
     /*column-gap: -10px;*/
     /*z-index: 10;*/
     /*position: relative;*/
@@ -190,3 +193,23 @@
     border-radius: 7px;
     align-self: start;
 }
+
+
+.darkCard{
+    background-color: #2d3748;
+    border: solid 2px #4a5568;
+    color: #bac4d0;
+    box-shadow: none;
+}
+
+.darkCard .text{
+    color: #aaaaaaaa;
+}
+
+.darkCard button{
+    box-shadow: none;
+    color:whitesmoke;
+}
+/*.darkCard:hover{*/
+/*    background-color: gray-700;*/
+/*}*/

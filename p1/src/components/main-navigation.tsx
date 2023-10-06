@@ -6,14 +6,19 @@ import wishlist from '../../public/wishlist.png'
 import user from '../../public/user.png'
 import {useDispatch, useSelector} from "react-redux";
 import {userActions} from "@/store";
+import {useRouter} from "next/router";
 
 function MainNavigation() {
+
+
+    const router= useRouter();
     const userData = useSelector((state:{user:{role:string, name:string}}) => state.user)
     const dispatch = useDispatch()
 
     async function logoutFunc() {
         dispatch(userActions.logout())
         localStorage.removeItem('token')
+        await router.push('/')
         // await persistStore(store).purge();
         window.location.reload()
     }
@@ -36,7 +41,7 @@ function MainNavigation() {
                     <p className={styles.menu_item}>Cart</p></div>}
 
                 {userData.role==="admin" && <div className={styles.menu_items}><p className={styles.menu_item}><Link href={'/users'}>Users</Link></p>
-                    <p className={styles.menu_item}><Link href="/">Products</Link></p></div>}
+                    <p className={styles.menu_item}><Link href="/product">Products</Link></p></div>}
 
                 {!userData.role? <p className={styles.menu_item}><img src={user.src} alt="user" className={styles.menu_icon}/><Link href="/auth/login">Login</Link></p>:
                     <div className={styles.menu_items}>
