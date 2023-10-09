@@ -19,7 +19,6 @@ function Products(){
         return nr===selected? styles.menu + ' ' + styles.menuSelected : styles.menu
     }
 
-
     return(
         <>
             <Modal onClose={()=>setOpenModal(false)} open={openModal}

@@ -10,7 +10,6 @@ function Message(){
     }
 
     return<>
-        {/*<p>{message.message}</p>*/}
         {message.message?
             <ChakraProvider>
                 <Stack >

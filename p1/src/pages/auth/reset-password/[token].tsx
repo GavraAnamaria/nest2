@@ -1,4 +1,4 @@
-import RegisterForm from "@/components/register-form";
+import RegisterForm from "@/components/forms/register-form";
 
 function ResetPasswordConfirmPage(){
     return (<RegisterForm  mode={'reset'} />)

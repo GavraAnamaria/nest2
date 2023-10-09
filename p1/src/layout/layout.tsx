@@ -1,6 +1,6 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
-import MainNavigation from "@/components/main-navigation";
+import MainNavigation from "@/layout/main-navigation";
 import React from "react";
 import Message from "@/components/message";
 import {ChakraProvider} from "@chakra-ui/react";

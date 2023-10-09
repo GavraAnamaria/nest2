@@ -5,22 +5,15 @@ import {useRouter} from "next/router";
 import Link from "next/link";
 import {useDispatch} from "react-redux";
 import {messageActions, userActions} from "@/store";
-import {eventCliSession} from "next/dist/telemetry/events";
 
-function RegisterForm(props:{mode:string}){
+function RegisterForm(props:{mode:string,  initData?:{id:string, firstName: string, uName:string, email:string, role:string, password:string, repPassword:string}}){
     const dispatch= useDispatch()
     const isLogin = (props.mode === 'login')
-    const isRegister = (props.mode === 'register')
+    const isRegister = (props.mode === 'register' || props.mode === 'create' || props.mode === 'edit')
     const router = useRouter();
     const [passwordErrors, setPasswordErrors] = useState<string[]>([]);
-
-    const [formData, setFormData]= useState({
-        firstName:"",
-        uName:"",
-        email:"",
-        password:"",
-        repPassword:"",
-    })
+    const data = props.initData? props.initData:{firstName: "", uName: "", email: "", role: "client", password: "", repPassword: ""}
+    const [formData, setFormData]= useState(data)
 
     const [changedData, setChangedData]= useState({
         firstName:false,
@@ -41,12 +34,6 @@ function RegisterForm(props:{mode:string}){
     const findClass=(condition:boolean)=>{
         return condition ? styles.formField+" "+ styles.invalid:styles.formField;
     }
-    
-    // const inputNameClass = nameInvalid? styles.formField+" "+ styles.invalid:styles.formField;
-    // const inputFirstNameClass = firstNameInvalid? styles.formField+" "+ styles.invalid:styles.formField;
-    // const inputEmailClass = emailInvalid? styles.formField+" "+ styles.invalid:styles.formField;
-    // const inputPasswordClass = passwordInvalid? styles.formField+" "+ styles.invalid:styles.formField;
-    // const inputRepeatPasswordClass = repPasswordInvalid ? styles.formField+" "+ styles.invalid:styles.formField;
 
     const loginFormIsValid = emailIsValid && passwordIsValid
     const registerFormIsValid = loginFormIsValid && formData.firstName.trim() !== '' && formData.uName.trim() !== ''  && formData.repPassword.trim() === (formData.password.trim());
@@ -75,7 +62,7 @@ function RegisterForm(props:{mode:string}){
         setPasswordErrors(errors);};
 
     function reset(){
-        setFormData({uName:'', firstName:'', password: '', email: '', repPassword: ''})
+        setFormData({uName:'', firstName:'', password: '', email: '', repPassword: '', role:'client'})
         setChangedData({name:false, firstName:false, password: false, email: false, repPassword: false})
     }
 
@@ -97,13 +84,20 @@ function RegisterForm(props:{mode:string}){
                         path='/users'
                     }
                 }
-            } else if(isRegister){
+            } else if(props.mode === 'register'){
               error = await SendConfirmMsg(formData.email)
                 if(!error) {
                     error = await RegisterUser(formData.email, formData.password, formData.firstName, formData.uName)
                     dispatch(messageActions.setMessage({message:'Confirmation email sent! Please check your inbox.', messageType:"success"}))
                 }
                  path='/'
+            } else if(props.mode === 'create'){
+              error = await SendConfirmMsg(formData.email)
+                if(!error) {
+                    error = await RegisterUser(formData.email, formData.password, formData.firstName, formData.uName)
+                    dispatch(messageActions.setMessage({message:'User created successfully', messageType:"success"}))
+                }
+                 path='#'
             }else{
                 const token =  router.query.token
                 if(token) {
@@ -124,7 +118,7 @@ function RegisterForm(props:{mode:string}){
     return (
         <>
         <div className={styles.container}>
-            <h1>{isLogin? "Login": (isRegister)? "Register":"Reset Password"}</h1>
+            <h1>{props.initData? "Edit" : isLogin? "Login": (isRegister)? "Register":"Reset Password"}</h1>
             <form onSubmit={submitHandler}>
                 {isRegister &&
                     <div className={findClass(firstNameInvalid)}>
@@ -185,6 +179,14 @@ function RegisterForm(props:{mode:string}){
                     />
                     {repPasswordInvalid && <p className={styles.errorText}>Wrong password!</p>}
                 </div>}
+                {(props.mode==='create' || props.mode==='edit')  && <div className={findClass(repPasswordInvalid)}>
+                    <label htmlFor="underline_select" >Role: </label>
+                    <select value={formData.role} id="underline_select" className="block py-2.5 px-0 w-full text-sm text-gray-500 bg-transparent border-0 border-b-2 border-gray-200 appearance-none dark:text-gray-400 dark:border-gray-700 focus:outline-none focus:ring-0 focus:border-gray-200 peer">
+                        <option value="client">Client</option>
+                        <option value="admin">Admin</option>
+                    </select>
+                </div>
+                }
                 <div className={styles.formAction}>
                     <button className={styles.button} disabled={!formIsValid}>Submit</button>
                 </div>
@@ -194,7 +196,7 @@ function RegisterForm(props:{mode:string}){
                             <p>Don&apos; t have an account?<Link href="/auth/register">  Sign Up</Link></p>
                             <p><Link href="/auth/reset-password"> Forgot Password?</Link></p>
                         </div>}
-                    {isRegister && <p>Already have an account? <Link href="/auth/login">  Log in</Link></p>}
+                    {(props.mode==='register') && <p>Already have an account? <Link href="/auth/login">  Log in</Link></p>}
                 </div>
             </form>
         </div>

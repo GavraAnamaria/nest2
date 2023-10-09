@@ -9,8 +9,6 @@ import {userActions} from "@/store";
 import {useRouter} from "next/router";
 
 function MainNavigation() {
-
-
     const router= useRouter();
     const userData = useSelector((state:{user:{role:string, name:string}}) => state.user)
     const dispatch = useDispatch()

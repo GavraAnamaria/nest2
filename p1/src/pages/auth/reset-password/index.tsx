@@ -1,9 +1,6 @@
-import RegisterForm from "@/components/register-form";
-import styles from "@/components/register-form.module.css";
+import styles from "@/components/forms/register-form.module.css";
 import React, {useState} from "react";
-import {LoginUser, RegisterUser, SendConfirmMsg} from "@/api/user-api";
 import {useRouter} from "next/router";
-import {Alert, AlertIcon, ChakraProvider, Stack} from "@chakra-ui/react";
 import {SendResetMsg} from "@/api/user-api";
 import {useDispatch} from "react-redux";
 import {messageActions} from "@/store";

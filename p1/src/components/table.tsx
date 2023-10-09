@@ -27,6 +27,11 @@ import {capitalize} from "./utils";
 import {Toast} from "primereact/toast";
 import {ConfirmDialog} from "primereact/confirmdialog";
 import {deleteUser} from "@/api/user-api";
+import styles from "@/components/product-list.module.css";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
+import Typography from "@mui/material/Typography";
+import RegisterForm from "@/components/forms/register-form";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
     'confirmed': "success",
@@ -57,6 +62,14 @@ export default function Table1(props:{users:User[]}) {
     const [confirmVisible, setConfirmVisible] = useState(false);
     const toast = useRef<Toast>(null);
     const [uid, setUid]=useState('')
+    const [openModal, setOpenModal] = useState(false)
+    const [editData, setEditData] = useState("")
+
+    const getUserById=(id:string)=>{
+        const user = props.users.find(x => x.id === id);
+        return user? {id:id, firstName: user.firstName, uName: user.lastName, email: user.email, role: user.role.substring(1), password: user.password, repPassword: user.password}:undefined;
+
+    }
 
     const reject = () => {
         if (toast.current) {
@@ -72,9 +85,6 @@ export default function Table1(props:{users:User[]}) {
     const accept = async () => {
         const token = localStorage.getItem('token')
         if (token && toast.current) {
-            console.log(token)
-            console.log('uid')
-            console.log(uid)
             const error = await deleteUser(token, uid)
             if (error) {
                 toast.current.show({
@@ -192,7 +202,7 @@ export default function Table1(props:{users:User[]}) {
                             </DropdownTrigger>
                             <DropdownMenu >
                                 <DropdownItem>View</DropdownItem>
-                                <DropdownItem>Edit</DropdownItem>
+                                <DropdownItem onClick={()=>{setOpenModal(true); setEditData(user.id)}}>Edit</DropdownItem>
                                 <DropdownItem onClick={()=>setConfirmVisible(true)}>Delete</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
@@ -319,6 +329,7 @@ export default function Table1(props:{users:User[]}) {
                             className="bg-foreground text-background"
                             endContent={<PlusIcon />}
                             size="sm"
+                            onClick={()=>setOpenModal(true)}
                         >
                             Add New
                         </Button>
@@ -396,11 +407,16 @@ export default function Table1(props:{users:User[]}) {
     );
 
     return (<>
+            <Modal onClose={()=>{setOpenModal(false); setEditData("")}} open={openModal}
+                   aria-labelledby="modal-modal-title"
+                   aria-describedby="modal-modal-description">
+                <Box className={styles.modal}>
+                    {editData? <RegisterForm mode='edit' initData={getUserById(editData)}/>: <RegisterForm mode='create'/>}
+                </Box>
+            </Modal>
         <Toast ref={toast} />
-            <div >
-    <ConfirmDialog visible={confirmVisible} onHide={() => setConfirmVisible(false)} message={`Are you sure you want to delete the user with id ${uid}?`} header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} className="confirm"/>
-            </div>
-                <Table
+        <ConfirmDialog visible={confirmVisible} onHide={() => setConfirmVisible(false)} message={`Are you sure you want to delete the user with id ${uid}?`} header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} className="confirm"/>
+            <Table
             isCompact
             removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"

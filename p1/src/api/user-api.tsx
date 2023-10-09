@@ -140,7 +140,7 @@ export async function ResetPassword(token:string, password:string) {
 }
 
 export async function getUsers(token:string) {
-    const response = await fetch('http://localhost:3001/v1/users', {
+    return await fetch('http://localhost:3001/v1/users', {
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
@@ -148,7 +148,6 @@ export async function getUsers(token:string) {
         },
     })
 
-    return response
 }
 
 
