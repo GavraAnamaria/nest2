@@ -149,7 +149,26 @@ export async function getUsers(token:string) {
     })
 
     return response
+}
 
+
+export async function deleteUser(token:string, id:string) {
+    const response = await fetch('http://localhost:3001/v1/users/'+ id, {
+        method: 'DELETE',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+    })
+
+    if (response.status/100 === 4) {
+        return response.text().then(error=>JSON.parse(error).message)
+    }
+
+    if(!response.ok)
+        return "Delete error"
+
+    return ""
 }
 
 

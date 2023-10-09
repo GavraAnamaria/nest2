@@ -96,7 +96,6 @@
 
 
 
-
 .card{
     /*padding-bottom: 2rem;*/
     opacity:.9;
@@ -210,6 +209,8 @@
     box-shadow: none;
     color:whitesmoke;
 }
+
+
 /*.darkCard:hover{*/
 /*    background-color: gray-700;*/
 /*}*/

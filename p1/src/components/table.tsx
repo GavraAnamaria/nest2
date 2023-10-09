@@ -1,5 +1,4 @@
-import React, {useEffect} from "react";
-
+import React, {useRef, useState} from "react";
 import {
     Table,
     TableHeader,
@@ -25,6 +24,9 @@ import {VerticalDotsIcon} from "../../public/VerticalDotsIcon";
 import {SearchIcon} from "../../public/SearchIcon";
 import {columns, statusOptions, roleOptions} from "./data";
 import {capitalize} from "./utils";
+import {Toast} from "primereact/toast";
+import {ConfirmDialog} from "primereact/confirmdialog";
+import {deleteUser} from "@/api/user-api";
 
 const statusColorMap: Record<string, ChipProps["color"]> = {
     'confirmed': "success",
@@ -36,8 +38,8 @@ type User={id:string, role:string, email:string, password:string, createdAt:stri
 type User1={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, name:string, status:string}
 
 export default function Table1(props:{users:User[]}) {
-    const users:User1[] = props.users.map(u=> {return {id:u.id, role:u.role.substring(1), email:u.email, password:u.password,createdAt:u.createdAt, updatedAt:u.updatedAt, name:u.firstName+' '+u.lastName, status:(u.role.charAt(0)==='0')? 'unconfirmed' : 'confirmed' }})
-    // type User = typeof users[0];
+    const users2:User1[] = props.users.map(u=> {return {id:u.id, role:u.role.substring(1), email:u.email, password:u.password,createdAt:u.createdAt, updatedAt:u.updatedAt, name:u.firstName+' '+u.lastName, status:(u.role.charAt(0)==='0')? 'unconfirmed' : 'confirmed' }})
+    const [users, setUsers] = useState(users2)
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
     const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -49,10 +51,46 @@ export default function Table1(props:{users:User[]}) {
         direction: "ascending",
     });
     const [page, setPage] = React.useState(1);
-
     const pages = Math.ceil(users.length / rowsPerPage);
-
     const hasSearchFilter = Boolean(filterValue);
+
+    const [confirmVisible, setConfirmVisible] = useState(false);
+    const toast = useRef<Toast>(null);
+    const [uid, setUid]=useState('')
+
+    const reject = () => {
+        if (toast.current) {
+            toast.current.show({
+                severity: 'warn',
+                summary: 'Rejected',
+                detail: 'Deletion has been successfully canceled. Your item is safe.',
+                life: 3000
+            });
+        }
+    }
+
+    const accept = async () => {
+        const token = localStorage.getItem('token')
+        if (token && toast.current) {
+            console.log(token)
+            console.log('uid')
+            console.log(uid)
+            const error = await deleteUser(token, uid)
+            if (error) {
+                toast.current.show({
+                    severity: 'error',
+                    summary: 'ERROR',
+                    detail: error,
+                    life: 3000
+                });
+            } else {
+                toast.current.show({severity: 'info', summary: 'Confirmed', detail: 'User deleted', life: 3000});
+                // window.location.reload()
+                const updatedUsers = users.filter((user) => user.id !== uid);
+                setUsers(updatedUsers);
+            }
+        }
+    }
 
     const headerColumns = React.useMemo(() => {
         if (visibleColumns === "all") return columns;
@@ -61,7 +99,6 @@ export default function Table1(props:{users:User[]}) {
 
     const filteredItems = React.useMemo(() => {
         let filteredUsers = [...users];
-
         if (hasSearchFilter) {
             filteredUsers = filteredUsers.filter((user) =>
               user.name.includes(filterValue)
@@ -91,8 +128,8 @@ export default function Table1(props:{users:User[]}) {
 
     const sortedItems = React.useMemo(() => {
         return [...items].sort((a: User1, b: User1) => {
-            const first = a[sortDescriptor.column as keyof User1] as string;
-            const second = b[sortDescriptor.column as keyof User1] as string;
+            const first = a[sortDescriptor.column as keyof User1] ;
+            const second = b[sortDescriptor.column as keyof User1] ;
             const cmp = first < second ? -1 : first > second ? 1 : 0;
             return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
@@ -150,13 +187,13 @@ export default function Table1(props:{users:User[]}) {
                         <Dropdown className="bg-background border-1 border-default-200">
                             <DropdownTrigger>
                                 <Button isIconOnly radius="full" size="sm" variant="light">
-                                    <VerticalDotsIcon className="text-default-400" />
+                                    <VerticalDotsIcon className="text-default-400" onClick={()=>setUid(user.id)}/>
                                 </Button>
                             </DropdownTrigger>
-                            <DropdownMenu>
+                            <DropdownMenu >
                                 <DropdownItem>View</DropdownItem>
                                 <DropdownItem>Edit</DropdownItem>
-                                <DropdownItem>Delete</DropdownItem>
+                                <DropdownItem onClick={()=>setConfirmVisible(true)}>Delete</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
                     </div>
@@ -358,8 +395,12 @@ export default function Table1(props:{users:User[]}) {
         [],
     );
 
-    return (
-        <Table
+    return (<>
+        <Toast ref={toast} />
+            <div >
+    <ConfirmDialog visible={confirmVisible} onHide={() => setConfirmVisible(false)} message={`Are you sure you want to delete the user with id ${uid}?`} header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} className="confirm"/>
+            </div>
+                <Table
             isCompact
             removeWrapper
             aria-label="Example table with custom cells, pagination and sorting"
@@ -397,6 +438,6 @@ export default function Table1(props:{users:User[]}) {
                     </TableRow>
                 )}
             </TableBody>
-        </Table>
+        </Table></>
     );
 }

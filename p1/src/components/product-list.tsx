@@ -20,8 +20,6 @@ function Products(){
     }
 
 
-
-
     return(
         <>
             <Modal onClose={()=>setOpenModal(false)} open={openModal}

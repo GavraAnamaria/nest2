@@ -26,7 +26,7 @@ function ProductCard(props:{style:string, role:string }){
 
     return (<>
             <Toast ref={toast} />
-            <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Are you sure you want to delete this item?" header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} />
+            <ConfirmDialog visible={visible} onHide={() => setVisible(false)} message="Are you sure you want to delete this item?" header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} className='confirm'/>
             <div className={card_style} >
                 {props.role==='admin' && <div className={styles.exitBtn} style={{backgroundColor:"red"}} onClick={() => setVisible(true)} >x</div>}
                 <img src="https://thumbor.forbes.com/thumbor/fit-in/900x510/https://www.forbes.com/home-improvement/wp-content/uploads/2022/07/download-23.jpg" alt="house"/>

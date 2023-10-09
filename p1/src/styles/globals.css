@@ -104,3 +104,9 @@ a {
     translate: -50% -50%;
   }
 }
+
+.confirm button{
+  padding: 1rem;
+  margin: 0.3rem;
+  /*border: solid 2px gray;*/
+}
