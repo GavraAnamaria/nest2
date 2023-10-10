@@ -1,7 +1,6 @@
 import React, {useRef, useState} from "react";
 import styles from './product-card.module.css'
-import {useSelector} from "react-redux";
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { ConfirmDialog} from 'primereact/confirmdialog';
 import { Toast } from 'primereact/toast';
 
 function ProductCard(props:{style:string, role:string }){

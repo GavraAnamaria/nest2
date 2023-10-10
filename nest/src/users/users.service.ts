@@ -19,9 +19,6 @@ export class UsersService {
     if (foundUser) {
       throw new BadRequestException('User already exists');
     }
-    // const saltRounds = 10;
-    // const salt = await bcrypt.genSalt(saltRounds);
-    // const passwordHash = await bcrypt.hash(createUserDto.password, salt);
     const passwordHash = await bcrypt.hash(createUserDto.password, 10);
 
     const hashedUser = { ...createUserDto, password: passwordHash };

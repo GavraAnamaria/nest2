@@ -36,6 +36,7 @@ function Products(){
                     </Typography>
                 </Box>
             </Modal>
+
             <div style={{display:'flex'}}>
                 <img className={detStyle(1)} src={display1.src} alt="grid" onClick={()=>setSelected(1)}/>
                 <img className={detStyle(2)} src={display2.src} alt="list" onClick={()=>setSelected(2)}/>

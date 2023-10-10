@@ -12,18 +12,27 @@
     min-width:100vw;
     z-index: 50;
     /*margin-bottom:3rem;*/
-
 }
 
 .menu_items{
     display: flex;
     align-content: center;
     gap: 2rem;
+    color: #999999;
+    background-color: #282c34;
+    overflow:hidden;
+    border-radius: 0;
+
 }
 
+
+
 .menu_item{
+    overflow: hidden;
     display: flex;
     align-content: center;
+    padding: .5rem;
+    border-radius: 0;
     /*gap: 2rem;*/
 }
 

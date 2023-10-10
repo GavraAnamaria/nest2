@@ -20,7 +20,7 @@ function UsersPage(){
                     if(response.status===401){
                         dispatch(messageActions.setMessage({message:'Session expired', messageType:'error'}));
                         dispatch(userActions.logout())
-                        await router.push('/')
+                        await router.push('/auth/login')
                     }
                     if (!response.ok) {
                         dispatch(messageActions.setMessage({message:'Fetch error', messageType:'error'}));
@@ -33,7 +33,7 @@ function UsersPage(){
                     console.log(data1)
                 })
         }else{
-            dispatch(messageActions.setMessage({message:'access denied', messageType:'error'}));
+            dispatch(messageActions.setMessage({message:'Access denied', messageType:'error'}));
             router.push('/')
         }},[])
 

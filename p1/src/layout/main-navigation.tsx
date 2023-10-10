@@ -7,6 +7,7 @@ import user from '../../public/user.png'
 import {useDispatch, useSelector} from "react-redux";
 import {userActions} from "@/store";
 import {useRouter} from "next/router";
+import {Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/react";
 
 function MainNavigation() {
     const router= useRouter();
@@ -42,10 +43,32 @@ function MainNavigation() {
                     <p className={styles.menu_item}><Link href="/product">Products</Link></p></div>}
 
                 {!userData.role? <p className={styles.menu_item}><img src={user.src} alt="user" className={styles.menu_icon}/><Link href="/auth/login">Login</Link></p>:
-                    <div className={styles.menu_items}>
-                        <p className={styles.menu_item} onClick={logoutFunc}><img src={logout.src} alt="logout" className={styles.menu_icon}/>Logout</p>
-                        <p className={styles.menu_item}><img src={user.src} alt="user" className={styles.menu_icon}/>{userData.name}</p>
-                    </div>}
+                    <Dropdown>
+                        <DropdownTrigger className={styles.menu_item}>
+                            <p className={styles.menu_item}
+                                // variant="bordered"
+                            >
+                                <img src={user.src} alt="user" className={styles.menu_icon}/>{userData.name}
+                            </p>
+                        </DropdownTrigger>
+                        <DropdownMenu aria-label="Static Actions">
+                            <DropdownItem key={'logout'} color={'default'} className={styles.menu_items}>
+                                <p className={styles.menu_item} onClick={logoutFunc}><img src={logout.src} alt="logout" className={styles.menu_icon}/>Logout</p>
+                            </DropdownItem>
+
+                            <DropdownItem key={'logout'} color={'default'} className={styles.menu_items}>
+                                <p className={styles.menu_item}><img src={user.src} alt="profile" className={styles.menu_icon}/>Profile</p>
+                            </DropdownItem>
+                        </DropdownMenu>
+                    </Dropdown>
+
+
+                    // <div className={styles.menu_items}>
+                    //     <p className={styles.menu_item} onClick={logoutFunc}><img src={logout.src} alt="logout" className={styles.menu_icon}/>Logout</p>
+                    //     <p className={styles.menu_item}><img src={user.src} alt="user" className={styles.menu_icon}/>{userData.name}</p>
+                    // </div>
+
+                }
             </div>
         </div>
     )
