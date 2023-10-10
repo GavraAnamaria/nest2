@@ -4,7 +4,7 @@ const columns = [
     {name: "ID", uid: "id"},
     {name: "NAME", uid: "name", sortable: true},
     {name: "ROLE", uid: "role"},
-    {name: "STATUS", uid: "status"},//CONFIRMAT
+    {name: "STATUS", uid: "status"},
     {name: "UPDATED AT", uid: "updatedAt", sortable: true},
     {name: "CREATED AT", uid: "createdAt", sortable: true},
     {name: "PASSWORD", uid: "password"},

@@ -50,7 +50,7 @@ export async function LoginUser(email:string, password:string) {
     const resData = await response.json()
     const token = resData.access_token
     const user = decode(token);
-    if (user.role[0] === "0") {//confirm flag
+    if (user.isEmailConfirmed === false) {
         return "Please confirm your email address"
     }
     localStorage.setItem('token', token)

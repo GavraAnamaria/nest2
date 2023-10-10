@@ -1,7 +1,26 @@
-import RegisterForm from "@/components/forms/register-form";
+import {useRouter} from "next/router";
+import {useEffect} from "react";
 
-function ResetPasswordConfirmPage(){
-    return (<RegisterForm  mode={'reset'} />)
+function RedirectPage() {
+    const router = useRouter();
+    const token =  router.query.token
+
+    useEffect(() => {
+        if (token) {
+            localStorage.setItem('token', token.toString())
+            router.push('/auth/reset-password/reset');
+        }
+    }, [token]);
+
+
+    return(
+        <h1>Redirecting...</h1>
+    )
 }
 
-export default ResetPasswordConfirmPage
+export default RedirectPage
+
+
+
+
+

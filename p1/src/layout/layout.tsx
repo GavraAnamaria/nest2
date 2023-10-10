@@ -4,6 +4,7 @@ import MainNavigation from "@/layout/main-navigation";
 import React from "react";
 import Message from "@/components/message";
 import {ChakraProvider} from "@chakra-ui/react";
+import Footer from "@/layout/footer";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,6 +23,7 @@ export default function RootLayout({
           <MainNavigation />
               <Message/>
             {children}
+          <Footer/>
       </>
   )
 }

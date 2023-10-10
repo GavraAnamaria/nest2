@@ -78,9 +78,8 @@ function RegisterForm(props:{mode:string,  initData?:{id:string, firstName: stri
                 const token = localStorage.getItem('token')
                 if(token) {
                     const user = decode(token);
-                    const role = user.role.substring(1)
-                    dispatch(userActions.login({ role: role, name: user.firstName }))
-                    if(role==='admin'){
+                    dispatch(userActions.login({ role: user.role, name: user.firstName }))
+                    if( user.role==='admin'){
                         path='/users'
                     }
                 }
@@ -99,7 +98,7 @@ function RegisterForm(props:{mode:string,  initData?:{id:string, firstName: stri
                 }
                  path='#'
             }else{
-                const token =  router.query.token
+                const token =  localStorage.getItem('token')
                 if(token) {
                     error = await ResetPassword(token.toString(), formData.password)
                     dispatch(messageActions.setMessage({message:'Password Reset Successful.', messageType:"success"}))

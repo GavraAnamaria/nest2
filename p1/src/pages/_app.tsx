@@ -9,22 +9,17 @@ import {NextUIProvider} from "@nextui-org/react";
 import {ChakraProvider} from "@chakra-ui/react";
 import {PrimeReactProvider} from "primereact/api";   // theme
 import 'primereact/resources/themes/lara-light-indigo/theme.css';   // theme
-// import 'primeflex/primeflex.css';                                   // css utility
 import 'primeicons/primeicons.css';
 import 'primereact/resources/primereact.css';
 function MyApp({ Component, pageProps }: AppProps) {
     return (
         <Provider store = {store}>
             <PersistGate loading={null} persistor={persistor}>
-                    {/*<ChakraProvider>/!*mesaj eroare*!/*/}
-                        <Layout>
-                            <NextUIProvider>
-                                <PrimeReactProvider>
-
-                                {/*<Message/>*/}
-                                <ChakraProvider/>{/*mesaj eroare*/}
-
-                            <div style={{paddingTop:'3rem'}}>  {/*bara meniu=fixa=>se suprapue cu pagina*/}
+                <Layout>
+                    <NextUIProvider>
+                        <PrimeReactProvider>
+                            <ChakraProvider/>{/*mesaj eroare*/}
+                            <div style={{paddingTop:'3rem', minHeight:'100vh'}}>  {/*bara meniu=fixa=>se suprapue cu pagina*/}
                                 <Component  {...pageProps} />
                             </div>
                                 </PrimeReactProvider>

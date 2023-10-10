@@ -9,8 +9,6 @@ import Modal from "@mui/material/Modal";
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 
-
-
 function Products(){
     const userData = useSelector((state:{user:{role:string, name:string}}) => state.user)
     const [selected, setSelected] = useState(1)
@@ -43,6 +41,9 @@ function Products(){
                 {userData.role==='admin' && <img className={styles.menu} src={add.src} onClick={()=>setOpenModal(true)} alt="list"/>}
             </div>
             <div className={styles.cards}>
+                <ProductCard style={selected===1? 'card':'card2'} role={userData.role}/>
+                <ProductCard style={selected===1? 'card':'card2'} role={userData.role}/>
+                <ProductCard style={selected===1? 'card':'card2'} role={userData.role}/>
                 <ProductCard style={selected===1? 'card':'card2'} role={userData.role}/>
                 <ProductCard style={selected===1? 'card':'card2'} role={userData.role}/>
                 <ProductCard style={selected===1? 'card':'card2'} role={userData.role}/>

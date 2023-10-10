@@ -33,18 +33,14 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import RegisterForm from "@/components/forms/register-form";
 
-const statusColorMap: Record<string, ChipProps["color"]> = {
-    'confirmed': "success",
-    'unconfirmed': "danger"
-};
 
 const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "createdAt", "updatedAt", "actions"];
-type User={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, firstName:string, lastName:string}
-type User1={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, name:string, status:string}
+type User={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, firstName:string, lastName:string, isEmailConfirmed:boolean}
+// type User1={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, name:string, status:string}
 
 export default function Table1(props:{users:User[]}) {
-    const users2:User1[] = props.users.map(u=> {return {id:u.id, role:u.role.substring(1), email:u.email, password:u.password,createdAt:u.createdAt, updatedAt:u.updatedAt, name:u.firstName+' '+u.lastName, status:(u.role.charAt(0)==='0')? 'unconfirmed' : 'confirmed' }})
-    const [users, setUsers] = useState(users2)
+    // const users2:User1[] = props.users.map(u=> {return {id:u.id, role:u.role.substring(1), email:u.email, password:u.password,createdAt:u.createdAt, updatedAt:u.updatedAt, name:u.firstName+' '+u.lastName, status:(u.role.charAt(0)==='0')? 'unconfirmed' : 'confirmed' }})
+    const [users, setUsers] = useState(props.users)
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
     const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
@@ -111,13 +107,14 @@ export default function Table1(props:{users:User[]}) {
         let filteredUsers = [...users];
         if (hasSearchFilter) {
             filteredUsers = filteredUsers.filter((user) =>
-              user.name.includes(filterValue)
+                (user.firstName.includes(filterValue)||user.lastName.includes(filterValue))
             );
         }
 
         if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
             filteredUsers = filteredUsers.filter((user) => {
-                return Array.from(statusFilter).includes(user.status)
+                const status = user.isEmailConfirmed? 'confirmed':'waiting for confirmation';
+                return Array.from(statusFilter).includes(status)
                 }
             );
         }
@@ -137,16 +134,16 @@ export default function Table1(props:{users:User[]}) {
     }, [page, filteredItems, rowsPerPage]);
 
     const sortedItems = React.useMemo(() => {
-        return [...items].sort((a: User1, b: User1) => {
-            const first = a[sortDescriptor.column as keyof User1] ;
-            const second = b[sortDescriptor.column as keyof User1] ;
+        return [...items].sort((a: User, b: User) => {
+            const first = a[sortDescriptor.column as keyof User] ;
+            const second = b[sortDescriptor.column as keyof User] ;
             const cmp = first < second ? -1 : first > second ? 1 : 0;
             return sortDescriptor.direction === "descending" ? -cmp : cmp;
         });
     }, [sortDescriptor, items]);
 
-    const renderCell = React.useCallback((user: User1, columnKey: React.Key) => {
-        const cellValue = user[columnKey as keyof User1];
+    const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
+        const cellValue = user[columnKey as keyof User];
 
         switch (columnKey) {
             case "name":
@@ -173,10 +170,10 @@ export default function Table1(props:{users:User[]}) {
                 return (
                     <Chip
                         className="capitalize border-none gap-1 text-default-600"
-                        color={statusColorMap[user.status]}
+                        color={ user.isEmailConfirmed? "success":"danger"}
                         size="sm"
                         variant="dot">
-                        {(user.status==='unconfirmed')? 'waiting for confirmation':'confirmed'}
+                        {user.isEmailConfirmed? 'confirmed':'waiting for confirmation'}
                     </Chip>
                 );
             case "updatedAt":

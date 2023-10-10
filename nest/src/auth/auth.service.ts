@@ -37,6 +37,7 @@ export class AuthService {
       email: foundUser.email,
       id: foundUser.id,
       role: foundUser.role,
+      isEmailConfirmed: foundUser.isEmailConfirmed,
       firstName: foundUser.firstName,
     };
 

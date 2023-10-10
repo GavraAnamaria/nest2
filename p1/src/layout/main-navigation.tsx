@@ -7,7 +7,7 @@ import user from '../../public/user.png'
 import {useDispatch, useSelector} from "react-redux";
 import {userActions} from "@/store";
 import {useRouter} from "next/router";
-import {Button, Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/react";
+import {Dropdown, DropdownItem, DropdownMenu, DropdownTrigger} from "@nextui-org/react";
 
 function MainNavigation() {
     const router= useRouter();
@@ -18,7 +18,6 @@ function MainNavigation() {
         dispatch(userActions.logout())
         localStorage.removeItem('token')
         await router.push('/')
-        // await persistStore(store).purge();
         window.location.reload()
     }
 
@@ -57,17 +56,10 @@ function MainNavigation() {
                             </DropdownItem>
 
                             <DropdownItem key={'logout'} color={'default'} className={styles.menu_items}>
-                                <p className={styles.menu_item}><img src={user.src} alt="profile" className={styles.menu_icon}/>Profile</p>
+                                <p className={styles.menu_item}><img src={user.src} alt="profile" className={styles.menu_icon}/><Link href="/profile">Profile</Link></p>
                             </DropdownItem>
                         </DropdownMenu>
                     </Dropdown>
-
-
-                    // <div className={styles.menu_items}>
-                    //     <p className={styles.menu_item} onClick={logoutFunc}><img src={logout.src} alt="logout" className={styles.menu_icon}/>Logout</p>
-                    //     <p className={styles.menu_item}><img src={user.src} alt="user" className={styles.menu_icon}/>{userData.name}</p>
-                    // </div>
-
                 }
             </div>
         </div>

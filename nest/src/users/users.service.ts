@@ -24,7 +24,8 @@ export class UsersService {
     const hashedUser = { ...createUserDto, password: passwordHash };
     return await this.userRepo.save({
       ...hashedUser,
-      role: '0client',
+      role: 'client',
+      isEmailConfirmed: false,
     });
   }
 
@@ -42,7 +43,6 @@ export class UsersService {
 
   async update(id: string, updateUserDto: UpdateUserDto) {
     await this.userRepo.update(id, updateUserDto);
-
     return this.findOne(id);
   }
 
@@ -60,8 +60,7 @@ export class UsersService {
 
   async confirm(email: string) {
     const user = await this.findByEmail(email);
-    const role = '1' + user.role.substring(1);
-    await this.userRepo.update(user.id, { role: role });
+    await this.userRepo.update(user.id, { isEmailConfirmed: true });
     return this.findOne(user.id);
   }
 
