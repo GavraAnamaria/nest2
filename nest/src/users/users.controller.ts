@@ -19,6 +19,9 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { ApiOkResponse, ApiTags } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import {Role} from "../enums/role.enum";
+import {Roles} from "../public/decorators/roles.decorator";
+import {RolesGuard} from "./roles.guard";
 
 @ApiTags('Users')
 @Controller('users')
@@ -59,7 +62,8 @@ export class UsersController {
     return this.usersService.update(id, project);
   }
 
-  @UseGuards(JwtAuthGuard)
+  @Roles(Role.Admin)
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Delete('/:id')
   delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.usersService.delete(id);

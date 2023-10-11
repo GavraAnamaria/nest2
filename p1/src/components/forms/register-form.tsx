@@ -78,6 +78,7 @@ function RegisterForm(props:{mode:string,  initData?:{id:string, firstName: stri
                 const token = localStorage.getItem('token')
                 if(token) {
                     const user = decode(token);
+                    console.log(user)
                     dispatch(userActions.login({ role: user.role, name: user.firstName }))
                     if( user.role==='admin'){
                         path='/users'
@@ -89,7 +90,7 @@ function RegisterForm(props:{mode:string,  initData?:{id:string, firstName: stri
                     error = await RegisterUser(formData.email, formData.password, formData.firstName, formData.uName)
                     dispatch(messageActions.setMessage({message:'Confirmation email sent! Please check your inbox.', messageType:"success"}))
                 }
-                 path='/'
+                 path='/auth/login'
             } else if(props.mode === 'create'){
               error = await SendConfirmMsg(formData.email)
                 if(!error) {
