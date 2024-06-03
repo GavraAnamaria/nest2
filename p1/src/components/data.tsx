@@ -2,18 +2,27 @@ import React from "react";
 
 const columns = [
     {name: "ID", uid: "id"},
-    {name: "NAME", uid: "name", sortable: true},
-    {name: "ROLE", uid: "role"},
-    {name: "STATUS", uid: "status"},
+    {name: "NAME", uid: "name"},
+    {name: "EMAIL", uid: "email", sortable: true},
+    {name: "ROLE", uid: "role", sortable: true},
+    {name: "STATUS", uid: "status", sortable: true},
     {name: "UPDATED AT", uid: "updatedAt", sortable: true},
     {name: "CREATED AT", uid: "createdAt", sortable: true},
     {name: "PASSWORD", uid: "password"},
     {name: "ACTIONS", uid: "actions"},
 ];
-const statusOptions = [
-    {name: "Confirmed", uid: "confirmed"},
-    {name: "Waiting for confirmation", uid: "unconfirmed"},
-];
+const statusOptions = {
+    all: "all",
+    confirmed: "Confirmed",
+    unconfirmed: "Waiting for confirmation",
+    };
+
+const typeOptions = {
+    all: "All",
+    house:"House",
+    apartment:"Apartment",
+   singleRoom:"Single Room"
+    };
 
 const roleOptions = [
     {name: "Admin", uid: "admin"},
@@ -21,4 +30,4 @@ const roleOptions = [
 ];
 
 
-export {columns, statusOptions, roleOptions};
+export {columns, statusOptions, roleOptions, typeOptions};

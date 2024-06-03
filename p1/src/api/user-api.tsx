@@ -23,6 +23,33 @@ export async function RegisterUser(email:string, password:string, firstName:stri
 
     return ""
 }
+export async function EditUser(id:string,email:string, password:string, firstName:string, lastName:string) {
+    const token = localStorage.getItem('token')
+    const editData = {
+        email: email,
+        password: password,
+        firstName: firstName,
+        lastName: lastName
+    }
+    const response = await fetch(`http://localhost:3001/v1/users/by-id/${id}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify(editData)
+    })
+
+    if (response.status === 422 || response.status === 401) {
+        return response.text().then(error=>JSON.parse(error).message)
+    }
+
+    if(!response.ok) {
+        return `Failed to update data.`
+    }
+
+    return ""
+}
 
 
 export async function LoginUser(email:string, password:string) {

@@ -1,4 +1,4 @@
-import React, {useRef, useState} from "react";
+import React, {Dispatch, SetStateAction, useEffect, useRef, useState} from "react";
 import {
     Table,
     TableHeader,
@@ -16,10 +16,9 @@ import {
     User,
     Pagination,
     Selection,
-    ChipProps,
     SortDescriptor} from "@nextui-org/react";
 import {PlusIcon} from "../../public/Plusicon";
-import {ChevronDownIcon} from "@nextui-org/shared-icons";
+import {ChevronDownIcon, AvatarIcon} from "@nextui-org/shared-icons";
 import {VerticalDotsIcon} from "../../public/VerticalDotsIcon";
 import {SearchIcon} from "../../public/SearchIcon";
 import {columns, statusOptions, roleOptions} from "./data";
@@ -27,24 +26,18 @@ import {capitalize} from "./utils";
 import {Toast} from "primereact/toast";
 import {ConfirmDialog} from "primereact/confirmdialog";
 import {deleteUser} from "@/api/user-api";
-import styles from "@/components/product-list.module.css";
-import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box";
-import Typography from "@mui/material/Typography";
-import RegisterForm from "@/components/forms/register-form";
+import {User as UserType} from "@/types/user";
 
 
-const INITIAL_VISIBLE_COLUMNS = ["name", "role", "status", "createdAt", "updatedAt", "actions"];
-type User={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, firstName:string, lastName:string, isEmailConfirmed:boolean}
-// type User1={id:string, role:string, email:string, password:string, createdAt:string, updatedAt:string, name:string, status:string}
+const INITIAL_VISIBLE_COLUMNS = ["name", "email", "role", "status", "createdAt", "updatedAt", "actions"];
 
-export default function Table1(props:{users:User[]}) {
-    // const users2:User1[] = props.users.map(u=> {return {id:u.id, role:u.role.substring(1), email:u.email, password:u.password,createdAt:u.createdAt, updatedAt:u.updatedAt, name:u.firstName+' '+u.lastName, status:(u.role.charAt(0)==='0')? 'unconfirmed' : 'confirmed' }})
+export default function Table1(props:{users:UserType[], setOpenModal:Dispatch<SetStateAction<boolean>>, setEditData:Dispatch<SetStateAction<string>>}) {
     const [users, setUsers] = useState(props.users)
+    const [filteredItems, setFilteredItems] = useState(props.users)
     const [filterValue, setFilterValue] = React.useState("");
     const [selectedKeys, setSelectedKeys] = React.useState<Selection>(new Set([]));
     const [visibleColumns, setVisibleColumns] = React.useState<Selection>(new Set(INITIAL_VISIBLE_COLUMNS));
-    const [statusFilter, setStatusFilter] = React.useState<Selection>("all");
+    const [statusFilter, setStatusFilter] = React.useState<Selection>(new Set([statusOptions.all]));
     const [roleFilter, setRoleFilter] = React.useState<Selection>("all");
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
     const [sortDescriptor, setSortDescriptor] = React.useState<SortDescriptor>({
@@ -58,14 +51,6 @@ export default function Table1(props:{users:User[]}) {
     const [confirmVisible, setConfirmVisible] = useState(false);
     const toast = useRef<Toast>(null);
     const [uid, setUid]=useState('')
-    const [openModal, setOpenModal] = useState(false)
-    const [editData, setEditData] = useState("")
-
-    const getUserById=(id:string)=>{
-        const user = props.users.find(x => x.id === id);
-        return user? {id:id, firstName: user.firstName, uName: user.lastName, email: user.email, role: user.role.substring(1), password: user.password, repPassword: user.password}:undefined;
-
-    }
 
     const reject = () => {
         if (toast.current) {
@@ -91,7 +76,6 @@ export default function Table1(props:{users:User[]}) {
                 });
             } else {
                 toast.current.show({severity: 'info', summary: 'Confirmed', detail: 'User deleted', life: 3000});
-                // window.location.reload()
                 const updatedUsers = users.filter((user) => user.id !== uid);
                 setUsers(updatedUsers);
             }
@@ -103,20 +87,17 @@ export default function Table1(props:{users:User[]}) {
         return columns.filter((column) => Array.from(visibleColumns).includes(column.uid));
     }, [visibleColumns]);
 
-    const filteredItems = React.useMemo(() => {
+    useEffect(() => {
+        setUsers(props.users)
+    }, [props.users]);
+
+    useEffect(() => {
         let filteredUsers = [...users];
         if (hasSearchFilter) {
-            filteredUsers = filteredUsers.filter((user) =>
-                (user.firstName.includes(filterValue)||user.lastName.includes(filterValue))
-            );
-        }
-
-        if (statusFilter !== "all" && Array.from(statusFilter).length !== statusOptions.length) {
-            filteredUsers = filteredUsers.filter((user) => {
-                const status = user.isEmailConfirmed? 'confirmed':'waiting for confirmation';
-                return Array.from(statusFilter).includes(status)
-                }
-            );
+            const searchValue= filterValue.trim().toLowerCase();
+            filteredUsers = filteredUsers.filter((user) => (`${user.firstName}${user.lastName}`.toLowerCase().includes(searchValue)))}
+        if (Array.from(statusFilter)[0] !== statusOptions.all) {
+            filteredUsers = filteredUsers.filter((user) => (user.isEmailConfirmed === (Array.from(statusFilter)[0]===statusOptions.confirmed)));
         }
 
         if (roleFilter !== "all" && Array.from(roleFilter).length !== roleOptions.length) {
@@ -124,46 +105,50 @@ export default function Table1(props:{users:User[]}) {
                   Array.from(roleFilter).includes(user.role),
             );
         }
-        return filteredUsers;
-    }, [users, filterValue, statusFilter, roleFilter]);
+        setFilteredItems(filteredUsers);
+    }, [ users, filterValue, statusFilter, roleFilter]);
+
+    const sortedItems = React.useMemo(() => {
+        return [...filteredItems].sort((a: UserType, b: UserType) => {
+            const first = a[sortDescriptor.column as keyof UserType] ||'';
+            const second = b[sortDescriptor.column as keyof UserType] ||'';
+            const cmp = first < second ? -1 : first > second ? 1 : 0;
+            return sortDescriptor.direction === "descending" ? -cmp : cmp;
+        });
+    }, [sortDescriptor, filteredItems]);
 
     const items = React.useMemo(() => {
         const start = (page - 1) * rowsPerPage;
         const end = start + rowsPerPage;
-        return filteredItems.slice(start, end);
-    }, [page, filteredItems, rowsPerPage]);
+        return sortedItems.slice(start, end);
+    }, [page, sortedItems, rowsPerPage]);
 
-    const sortedItems = React.useMemo(() => {
-        return [...items].sort((a: User, b: User) => {
-            const first = a[sortDescriptor.column as keyof User] ;
-            const second = b[sortDescriptor.column as keyof User] ;
-            const cmp = first < second ? -1 : first > second ? 1 : 0;
-            return sortDescriptor.direction === "descending" ? -cmp : cmp;
-        });
-    }, [sortDescriptor, items]);
 
-    const renderCell = React.useCallback((user: User, columnKey: React.Key) => {
-        const cellValue = user[columnKey as keyof User];
+    const renderCell = React.useCallback((user: UserType, columnKey: React.Key) => {
+        const cellValue = user[columnKey as keyof UserType];
 
         switch (columnKey) {
             case "name":
                 return (
                     <User
-                        avatarProps={{radius: "full", size: "sm", src: "https://i.pravatar.cc/150?u=a042581f4e29026024d"}}
+                        avatarProps={{radius: "full", size: "sm", icon: <AvatarIcon/>}}
                         classNames={{
                             description: "text-default-500",
                         }}
-                        description={user.email}
+                        description={`${user.firstName} ${user.lastName}`}
                         name={cellValue}
-                    >
-                        {user.email}
-                    </User>
+                    />
+                );
+                case "email":
+                return (
+                    <div className="flex flex-col">
+                        <p className="text-bold text-small capitalize">{user.email}</p>
+                    </div>
                 );
             case "role":
                 return (
                     <div className="flex flex-col">
                         <p className="text-bold text-small capitalize">{user.role}</p>
-                        {/*<p className="text-bold text-tiny capitalize text-default-500">{user.team}</p>*/}
                     </div>
                 );
             case "status":
@@ -199,7 +184,7 @@ export default function Table1(props:{users:User[]}) {
                             </DropdownTrigger>
                             <DropdownMenu >
                                 <DropdownItem>View</DropdownItem>
-                                <DropdownItem onClick={()=>{setOpenModal(true); setEditData(user.id)}}>Edit</DropdownItem>
+                                <DropdownItem onClick={()=>{props.setOpenModal(true); props.setEditData(user.id)}}>Edit</DropdownItem>
                                 <DropdownItem onClick={()=>setConfirmVisible(true)}>Delete</DropdownItem>
                             </DropdownMenu>
                         </Dropdown>
@@ -257,15 +242,15 @@ export default function Table1(props:{users:User[]}) {
                             </DropdownTrigger>
                             <DropdownMenu
                                 disallowEmptySelection
+                                selectionMode="single"
                                 aria-label="Table Columns"
                                 closeOnSelect={false}
                                 selectedKeys={statusFilter}
-                                selectionMode="multiple"
                                 onSelectionChange={setStatusFilter}
                             >
-                                {statusOptions.map((status) => (
-                                    <DropdownItem key={status.uid} className="capitalize">
-                                        {capitalize(status.name)}
+                                {Object.values(statusOptions).map((status) => (
+                                    <DropdownItem key={status} className="capitalize">
+                                        {capitalize(status)}
                                     </DropdownItem>
                                 ))}
                             </DropdownMenu>
@@ -326,7 +311,7 @@ export default function Table1(props:{users:User[]}) {
                             className="bg-foreground text-background"
                             endContent={<PlusIcon />}
                             size="sm"
-                            onClick={()=>setOpenModal(true)}
+                            onClick={()=>props.setOpenModal(true)}
                         >
                             Add New
                         </Button>
@@ -404,19 +389,11 @@ export default function Table1(props:{users:User[]}) {
     );
 
     return (<>
-            <Modal onClose={()=>{setOpenModal(false); setEditData("")}} open={openModal}
-                   aria-labelledby="modal-modal-title"
-                   aria-describedby="modal-modal-description">
-                <Box className={styles.modal}>
-                    {editData? <RegisterForm mode='edit' initData={getUserById(editData)}/>: <RegisterForm mode='create'/>}
-                </Box>
-            </Modal>
         <Toast ref={toast} />
         <ConfirmDialog visible={confirmVisible} onHide={() => setConfirmVisible(false)} message={`Are you sure you want to delete the user with id ${uid}?`} header="Confirmation" icon="pi pi-exclamation-triangle" accept={accept} reject={reject} className="confirm"/>
             <Table
             isCompact
             removeWrapper
-            aria-label="Example table with custom cells, pagination and sorting"
             bottomContent={bottomContent}
             bottomContentPlacement="outside"
             checkboxesProps={{
@@ -444,7 +421,7 @@ export default function Table1(props:{users:User[]}) {
                     </TableColumn>
                 )}
             </TableHeader>
-            <TableBody emptyContent={"No users found"} items={sortedItems}>
+            <TableBody emptyContent={"No users found"} items={items}>
                 {(item) => (
                     <TableRow key={item.id}>
                         {(columnKey) => <TableCell>{renderCell(item, columnKey)}</TableCell>}

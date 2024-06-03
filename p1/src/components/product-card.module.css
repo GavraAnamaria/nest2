@@ -2,7 +2,6 @@
     opacity:.9;
     width: 95%;
     padding: 1rem;
-    /*background-color: whitesmoke;*/
     box-shadow: 10px 10px 20px #666666;
     border-radius: .5rem;
     text-align: center;
@@ -17,16 +16,6 @@
 .card2:hover{
     opacity: 1;
 }
-
-/*.card2_button{*/
-/*width: 15rem;*/
-/*  height: 5rem;*/
-/*  font-size: 2rem;*/
-/*  color: white;*/
-/*  text-transform: uppercase;*/
-/*  background-color: gray;*/
-/*}*/
-
 
 .card2 button {
     display: inline-block;
@@ -78,14 +67,6 @@
 .card2 .text{
     border-right: 2px solid #666666;
 }
-/*.cards2{*/
-/*  display: flex;*/
-/*  justify-content: space-around;*/
-/*  flex-wrap:  wrap;*/
-/*  !*align-content: space-around;*!*/
-/*  !*gap: 3rem;*!*/
-/*  !*flex-direction: column;*!*/
-/*}*/
 
 .card2 img{
     border: 3px solid gray;
@@ -97,11 +78,9 @@
 
 
 .card{
-    /*padding-bottom: 2rem;*/
     opacity:.9;
     width: 16rem;
     height:auto;
-    /*background-color: whitesmoke;*/
     box-shadow: 10px 10px 20px #666666;
     border-radius: .5rem;
     text-align: center;
@@ -127,32 +106,22 @@
 }
 
 .text{
-    /*color: red;*/
-    /*background-color: white;*/
-    /*position: relative;*/
-    /*//opacity: .8;*/
-    /*text-align: center;*/
-    /*align-content: center;*/
-    /*align-items: center;*/
     height: 9rem;
     width: 80%;
     padding-top: 1rem;
     padding-bottom: 1rem;
-    /*background-color: black;*/
     margin: auto;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
-
-    /*column-gap: -10px;*/
-    /*z-index: 10;*/
-    /*position: relative;*/
     color: #666666;
-    /*overflow: hidden;*/
 }
 
 .text_elem{
     margin: .5rem;
+}
+.description{
+    font-size: 10px;
 }
 .card button {
     width: 70%;
@@ -193,7 +162,6 @@
     align-self: start;
 }
 
-
 .darkCard{
     background-color: #2d3748;
     border: solid 2px #4a5568;
@@ -210,6 +178,18 @@
     color:whitesmoke;
 }
 
+
+.modal{
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 400px;
+    background-color: whitesmoke;
+    border: 2px solid #000;
+    box-shadow: 15px 15px 24px ;
+    padding: 1rem;
+}
 
 /*.darkCard:hover{*/
 /*    background-color: gray-700;*/

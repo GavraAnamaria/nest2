@@ -23,7 +23,7 @@ function MainNavigation() {
 
     return(
         <div className={styles.menu_bar}>
-            <Link href={'/'}>
+            <Link href={!userData.role||userData.role==="client" ?'/':''}>
             <svg className={styles.logo} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 841.9 595.3">
                 <g fill="#61DAFB">
                     <path
@@ -33,7 +33,7 @@ function MainNavigation() {
                 </g>
             </svg>
             </Link>
-            <p className={styles.menu_item} style={{color:'whitesmoke'}}>NUME SITE//nume in paina</p>
+            <p className={styles.menu_item} style={{color:'whitesmoke'}}>Booking</p>
             <div className={styles.menu_items}>
                 {userData.role==="client" && <div className={styles.menu_items}><p className={styles.menu_item}><img className={styles.menu_icon} src={wishlist.src} alt="wishist"/><Link href={'/wishlist'}>Wish List</Link></p>
                     <p className={styles.menu_item}>Cart</p></div>}
