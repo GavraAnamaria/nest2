@@ -36,4 +36,8 @@ export class User {
 
   @Column({ default: false })
   isEmailConfirmed: boolean;
+
+  @Column({ type: 'bytea', nullable: true })
+  picture: Buffer;
+
 }

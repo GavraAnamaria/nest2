@@ -8,9 +8,11 @@ import { User } from './users/entities/user.entity';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
 import { ConfirmationModule } from './confirmation/confirmation.module';
+import {ProductModule} from "./products/products.module";
+import {Product} from "./products/entities/product.entity";
 
 // todo: add all entities here
-const ENTITIES = [User];
+const ENTITIES = [User, Product];
 
 @Module({
   imports: [
@@ -44,6 +46,7 @@ const ENTITIES = [User];
     UsersModule,
     AuthModule,
     ConfirmationModule,
+    ProductModule,
   ],
 })
 export class AppModule {}
